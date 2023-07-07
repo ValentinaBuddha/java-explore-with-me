@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   stats-server:
-    build: /stats/stats-server
+    build: ./stats/stats-server
     image: stats-server-image
     container_name: stats-server-container
     ports:
