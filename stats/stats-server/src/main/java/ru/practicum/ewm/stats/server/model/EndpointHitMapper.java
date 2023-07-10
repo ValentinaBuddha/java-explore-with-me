@@ -1,7 +1,7 @@
-package ru.practicum.model;
+package ru.practicum.ewm.stats.server.model;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.EndpointHitDto;
+import ru.practicum.ewm.stats.dto.EndpointHitDto;
 
 @UtilityClass
 public class EndpointHitMapper {
