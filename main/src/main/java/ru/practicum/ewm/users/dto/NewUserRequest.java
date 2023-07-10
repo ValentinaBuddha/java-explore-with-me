@@ -12,8 +12,14 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-    private String email;
-    private Long id;
+public class NewUserRequest {
+
+    @NotBlank
+    @Size(min = 2, max = 250)
     private String name;
+
+    @NotEmpty
+    @Email
+    @Size(max = 512)
+    private String email;
 }
