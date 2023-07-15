@@ -253,24 +253,23 @@ public class EventService {
         }
         specification = specification.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("state"), PUBLISHED));
-        String sortParam;
+        PageRequest pageRequest;
         switch (sort) {
             case "EVENT_DATE":
-                sortParam = "eventDate";
+                pageRequest = PageRequest.of(from / size, size, Sort.by("eventDate"));
                 break;
             case "VIEWS":
-                sortParam = "views";
+                pageRequest = PageRequest.of(from / size, size, Sort.by("views").descending());
                 break;
             default:
                 throw new ValidationException("Unknown sort: " + sort);
         }
-        List<Event> resultEvents = eventRepository.findAll(specification, PageRequest.of(from / size, size,
-                Sort.by(sortParam)));
-        setViews(resultEvents);
+        List<EventShortDto> result = eventRepository.findAll(specification, pageRequest).stream()
+                .map(EventMapper::toEventShortDto).collect(Collectors.toList());
         EndpointHitDto hit = new EndpointHitDto("ewm-main-service", request.getRequestURI(), request.getRemoteAddr(),
                 LocalDateTime.now());
         statsClient.saveHit(hit);
-        return resultEvents.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -304,7 +303,7 @@ public class EventService {
                 event.setViews(statsDto.get(0).getHits());
             }
         }
-        eventRepository.saveAll(events);
+//        eventRepository.saveAll(events);
     }
 
     protected void checkActualTime(LocalDateTime eventTime) {
