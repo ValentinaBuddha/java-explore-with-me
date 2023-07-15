@@ -13,11 +13,6 @@ import java.util.List;
 public class RequestController {
     private final RequestService requestService;
 
-    @GetMapping
-    public List<ParticipationRequestDto> getAllRequests(@PathVariable Long userId) {
-        return requestService.getAllRequests(userId);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addRequest(@PathVariable Long userId, @RequestParam Long eventId) {
@@ -27,5 +22,10 @@ public class RequestController {
     @PatchMapping("/{requestId}/cancel")
     public ParticipationRequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
         return requestService.cancelRequest(userId, requestId);
+    }
+
+    @GetMapping
+    public List<ParticipationRequestDto> getRequestsByUser(@PathVariable Long userId) {
+        return requestService.getRequestsByUser(userId);
     }
 }

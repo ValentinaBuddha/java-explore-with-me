@@ -3,10 +3,13 @@ package ru.practicum.ewm.events.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.ewm.locations.LocationDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+
+import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +26,7 @@ public class UpdateEventAdminRequest {
     String description;
 
     @Future
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;
 
     LocationDto location;

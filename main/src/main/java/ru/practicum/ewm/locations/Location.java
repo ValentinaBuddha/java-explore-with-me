@@ -10,15 +10,21 @@ import javax.persistence.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "locations")
 public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "lat", nullable = false)
+    @Column(nullable = false)
     Float lat;
 
-    @Column(name = "lon", nullable = false)
+    @Column(nullable = false)
     Float lon;
+
+    public Location(Float lat, Float lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
 }

@@ -1,63 +1,52 @@
 package ru.practicum.ewm.categories;
 
-import ru.practicum.ewm.categories.dto.CategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.ewm.categories.dto.CategoryDto;
+import ru.practicum.ewm.categories.dto.NewCategoryDto;
+import ru.practicum.ewm.exceptions.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CategoryService {
-    private final  CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
+        return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(newCategoryDto)));
+    }
+
+    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
+        Category category = getCategory(categoryId);
+        category.setName(categoryDto.getName());
+        return CategoryMapper.toCategoryDto(categoryRepository.save(category));
+    }
 
     @Transactional(readOnly = true)
     public List<CategoryDto> getCategories(Integer from, Integer size) {
-        int pageNumber = (int) Math.ceil((double) from / size);
-        Pageable pageable = PageRequest.of(pageNumber, size);
-
-        return categoryRepository.findAll(pageable).map(CategoryMapper::toCategoryDto).getContent();
+        return categoryRepository.findAll(PageRequest.of(from / size, size)).stream()
+                .map(CategoryMapper::toCategoryDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CategoryDto getCategoryById(Long categoryId) {
-        return CategoryMapper.toCategoryDto(
-                categoryRepository
-                        .findById(categoryId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found."))
-        );
+        return CategoryMapper.toCategoryDto(getCategory(categoryId));
     }
 
-    public CategoryDto addCategory(CategoryDto categoryDto) {
-        if (categoryRepository.existsByName(categoryDto.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Name is already used.");
-        }
-        return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(categoryDto)));
-    }
-
-    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found."));
-        if (categoryRepository.existsByName(categoryDto.getName()) && !categoryDto.getName().equals(category.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Name is already used.");
-        }
+    public void deleteCategory(Long categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found.");
+            throw new NotFoundException("Category with id=" + categoryId + " was not found");
         }
-        category.setName(categoryDto.getName());
-        categoryRepository.save(category);
-        return CategoryMapper.toCategoryDto(category);
+        categoryRepository.deleteById(categoryId);
     }
 
-    public void deleteCategory(Long catId) {
-        if (!categoryRepository.existsById(catId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Category not found.");
-        }
-        categoryRepository.deleteById(catId);
+    private Category getCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId).orElseThrow(() ->
+                new NotFoundException("Category with id=" + categoryId + " was not found"));
     }
 }

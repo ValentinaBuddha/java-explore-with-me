@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.ewm.locations.LocationDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
@@ -13,12 +14,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
+import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewEventDto {
-    Long id;
 
     @Size(min = 20, max = 2000)
     @NotBlank
@@ -32,7 +34,7 @@ public class NewEventDto {
     String description;
 
     @Future
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;
 
     @NotNull

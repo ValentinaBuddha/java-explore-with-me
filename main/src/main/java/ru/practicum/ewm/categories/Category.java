@@ -19,4 +19,8 @@ public class Category {
 
     @Column(nullable = false, unique = true)
     String name;
+
+    public Category(String name) {
+        this.name = name;
+    }
 }

@@ -1,7 +1,6 @@
-package ru.practicum.ewm.events;
+package ru.practicum.ewm.events.model;
 
 import ru.practicum.ewm.categories.Category;
-import ru.practicum.ewm.events.enums.StatePublic;
 import ru.practicum.ewm.locations.Location;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,6 +9,7 @@ import ru.practicum.ewm.users.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Builder
 @Entity
 @Getter
 @Setter
@@ -19,27 +19,28 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "annotation", length = 2000, nullable = false)
+    @Column(nullable = false)
     String annotation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     Category category;
 
-    @Column(name = "confirmed_request", nullable = false)
+    @Column(name = "confirmed_requests")
     Integer confirmedRequests;
 
     @Column(name = "created_on", nullable = false, columnDefinition = "TIMESTAMP")
     LocalDateTime createdOn;
 
-    @Column(length = 7000, nullable = false)
+    @Column(nullable = false)
     String description;
 
-    @Column(name = "event_date", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "event_date", nullable = false)
     LocalDateTime eventDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,25 +51,22 @@ public class Event {
     @JoinColumn(name = "location_id", nullable = false)
     Location location;
 
-    @Column(nullable = false)
     Boolean paid;
 
-    @Column(nullable = false)
+    @Column(name = "participant_limit")
     Integer participantLimit;
 
-    @Column(name = "published_on", columnDefinition = "TIMESTAMP")
+    @Column(name = "published_on")
     LocalDateTime publishedOn;
 
-    @Column(nullable = false)
+    @Column(name = "request_moderation")
     Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10, nullable = false)
-    StatePublic state;
+    State state;
 
-    @Column(length = 120, nullable = false)
+    @Column(nullable = false)
     String title;
 
-    @Column
     Long views;
 }

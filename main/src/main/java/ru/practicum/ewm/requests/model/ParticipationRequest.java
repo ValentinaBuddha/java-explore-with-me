@@ -2,8 +2,7 @@ package ru.practicum.ewm.requests.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.ewm.events.Event;
-import ru.practicum.ewm.requests.model.RequestStatus;
+import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.users.User;
 
 import javax.persistence.*;
@@ -16,14 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "participation_request")
+@Table(name = "requests")
 public class ParticipationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "created", nullable = false)
     LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,6 +33,5 @@ public class ParticipationRequest {
     User requester;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private RequestStatus status;
+    RequestStatus status;
 }

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.requests.model;
+package ru.practicum.ewm.requests.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class EventRequestStatusUpdateRequest {
     private List<Long> requestIds;
-
     private RequestStatus status;
 }
