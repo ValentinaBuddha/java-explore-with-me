@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.locations.LocationDto;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -34,6 +35,7 @@ public class UpdateEventUserRequest {
 
     Boolean paid;
 
+    @PositiveOrZero
     Integer participantLimit;
 
     Boolean requestModeration;

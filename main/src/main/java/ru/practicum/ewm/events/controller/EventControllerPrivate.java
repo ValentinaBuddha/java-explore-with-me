@@ -2,6 +2,7 @@ package ru.practicum.ewm.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.events.EventService;
 import ru.practicum.ewm.events.dto.EventFullDto;
@@ -18,6 +19,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor

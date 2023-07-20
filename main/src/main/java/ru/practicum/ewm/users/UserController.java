@@ -2,6 +2,7 @@ package ru.practicum.ewm.users;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.users.dto.NewUserRequest;
 import ru.practicum.ewm.users.dto.UserDto;
@@ -11,6 +12,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/users")

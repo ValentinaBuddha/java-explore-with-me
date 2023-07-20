@@ -15,13 +15,13 @@ public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    Float lat;
+    private Float lat;
 
     @Column(nullable = false)
-    Float lon;
+    private Float lon;
 
     public Location(Float lat, Float lon) {
         this.lat = lat;

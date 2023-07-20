@@ -17,13 +17,21 @@ import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventShortDto {
     Long id;
+
     String annotation;
+
     CategoryDto category;
+
     Integer confirmedRequests;
+
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;
+
     UserShortDto initiator;
+
     Boolean paid;
+
     String title;
+
     Long views;
 }

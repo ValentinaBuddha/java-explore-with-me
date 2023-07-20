@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,14 +51,16 @@ import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventService {
-    EventRepository eventRepository;
-    UserRepository userRepository;
-    CategoryRepository categoryRepository;
-    CategoryService categoryService;
-    LocationRepository locationRepository;
-    StatsClient statsClient;
+    final EventRepository eventRepository;
+    final UserRepository userRepository;
+    final CategoryRepository categoryRepository;
+    final CategoryService categoryService;
+    final LocationRepository locationRepository;
+    final StatsClient statsClient;
+    @Value("${app}")
+    String app;
 
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
         checkActualTime(newEventDto.getEventDate());
@@ -83,14 +86,16 @@ public class EventService {
         if (event.getState() == PUBLISHED) {
             throw new ForbiddenException("Published events can't be update");
         }
-        if (updateEvent.getAnnotation() != null) {
-            event.setAnnotation(updateEvent.getAnnotation());
+        String annotation = updateEvent.getAnnotation();
+        if (annotation != null && !annotation.isBlank()) {
+            event.setAnnotation(annotation);
         }
         if (updateEvent.getCategory() != null) {
             event.setCategory(CategoryMapper.toCategory(categoryService.getCategoryById(updateEvent.getCategory())));
         }
-        if (updateEvent.getDescription() != null) {
-            event.setDescription(updateEvent.getDescription());
+        String description = updateEvent.getDescription();
+        if (description != null && !description.isBlank()) {
+            event.setDescription(description);
         }
         LocalDateTime eventDate = updateEvent.getEventDate();
         if (eventDate != null) {
@@ -110,8 +115,9 @@ public class EventService {
         if (updateEvent.getRequestModeration() != null) {
             event.setRequestModeration(updateEvent.getRequestModeration());
         }
-        if (updateEvent.getTitle() != null) {
-            event.setTitle(updateEvent.getTitle());
+        String title = updateEvent.getTitle();
+        if (title != null && !title.isBlank()) {
+            event.setTitle(title);
         }
         if (updateEvent.getStateAction() != null) {
             StateActionPrivate stateActionPrivate = StateActionPrivate.valueOf(updateEvent.getStateAction());
@@ -141,14 +147,16 @@ public class EventService {
                 event.setState(State.CANCELED);
             }
         }
-        if (updateEvent.getAnnotation() != null) {
-            event.setAnnotation(updateEvent.getAnnotation());
+        String annotation = updateEvent.getAnnotation();
+        if (annotation != null && !annotation.isBlank()) {
+            event.setAnnotation(annotation);
         }
         if (updateEvent.getCategory() != null) {
             event.setCategory(CategoryMapper.toCategory(categoryService.getCategoryById(updateEvent.getCategory())));
         }
-        if (updateEvent.getDescription() != null) {
-            event.setDescription(updateEvent.getDescription());
+        String description = updateEvent.getDescription();
+        if (description != null && !description.isBlank()) {
+            event.setDescription(description);
         }
         LocalDateTime eventDate = updateEvent.getEventDate();
         if (eventDate != null) {
@@ -167,8 +175,9 @@ public class EventService {
         if (updateEvent.getRequestModeration() != null) {
             event.setRequestModeration(updateEvent.getRequestModeration());
         }
-        if (updateEvent.getTitle() != null) {
-            event.setTitle(updateEvent.getTitle());
+        String title = updateEvent.getTitle();
+        if (title != null && !title.isBlank()) {
+            event.setTitle(title);
         }
         return EventMapper.toEventFullDto(eventRepository.save(event));
     }
@@ -279,7 +288,7 @@ public class EventService {
             throw new NotFoundException("Event must be published.");
         }
         setViews(List.of(event));
-        EndpointHitDto hit = new EndpointHitDto("ewm-main-service", request.getRequestURI(), request.getRemoteAddr(),
+        EndpointHitDto hit = new EndpointHitDto(app, request.getRequestURI(), request.getRemoteAddr(),
                 LocalDateTime.now());
         statsClient.saveHit(hit);
         return EventMapper.toEventFullDto(event);
@@ -303,7 +312,6 @@ public class EventService {
                 event.setViews(statsDto.get(0).getHits());
             }
         }
-//        eventRepository.saveAll(events);
     }
 
     protected void checkActualTime(LocalDateTime eventTime) {

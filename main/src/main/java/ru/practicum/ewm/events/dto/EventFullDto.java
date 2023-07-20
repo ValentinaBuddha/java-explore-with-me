@@ -19,22 +19,37 @@ import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventFullDto {
     Long id;
+
     String annotation;
+
     CategoryDto category;
+
     Integer confirmedRequests;
+
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime createdOn;
+
     String description;
+
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;
+
     UserShortDto initiator;
+
     LocationDto location;
+
     Boolean paid;
+
     Integer participantLimit;
+
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime publishedOn;
+
     Boolean requestModeration;
+
     State state;
+
     String title;
+
     Long views;
 }

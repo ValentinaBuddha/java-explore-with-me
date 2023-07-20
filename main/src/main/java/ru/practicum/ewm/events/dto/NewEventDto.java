@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.locations.LocationDto;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
@@ -33,20 +31,30 @@ public class NewEventDto {
     @NotBlank
     String description;
 
+    @NotNull
     @Future
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;
 
-    @NotNull
+    @Valid
     LocationDto location;
 
-    Boolean paid = false;
+    boolean paid = false;
 
-    Integer participantLimit = 0;
+    @PositiveOrZero
+    int participantLimit = 0;
 
-    Boolean requestModeration = true;
+    boolean requestModeration = true;
 
     @Size(min = 3, max = 120)
     @NotBlank
     String title;
+
+    public Boolean getPaid() {
+        return paid;
+    }
+
+    public Boolean getRequestModeration() {
+        return requestModeration;
+    }
 }

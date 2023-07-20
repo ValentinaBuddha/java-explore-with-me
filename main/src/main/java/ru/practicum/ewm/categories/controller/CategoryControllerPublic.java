@@ -1,5 +1,6 @@
 package ru.practicum.ewm.categories.controller;
 
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.categories.dto.CategoryDto;
 import ru.practicum.ewm.categories.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/categories")

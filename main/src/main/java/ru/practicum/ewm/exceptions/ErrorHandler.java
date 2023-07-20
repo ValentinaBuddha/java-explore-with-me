@@ -1,7 +1,6 @@
 package ru.practicum.ewm.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import javax.validation.ConstraintViolationException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -56,9 +56,9 @@ public class ErrorHandler {
                 .build();
     }
 
-    @ExceptionHandler({ValidationException.class, PSQLException.class, NumberFormatException.class,
+    @ExceptionHandler({ValidationException.class, NumberFormatException.class,
             MethodArgumentTypeMismatchException.class, MethodArgumentNotValidException.class,
-            MissingServletRequestParameterException.class})
+            MissingServletRequestParameterException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError badRequest(RuntimeException e) {
         log.error(stackTraceToString(e));

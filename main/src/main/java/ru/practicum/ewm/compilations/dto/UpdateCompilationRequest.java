@@ -12,7 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 public class UpdateCompilationRequest {
     private List<Long> events;
+
     private Boolean pinned;
+
     @Size(min = 1, max = 50)
     private String title;
+
+    public Boolean getPinned() {
+        return pinned;
+    }
 }

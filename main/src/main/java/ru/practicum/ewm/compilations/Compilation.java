@@ -4,7 +4,7 @@ import lombok.*;
 import ru.practicum.ewm.events.model.Event;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -29,7 +29,7 @@ public class Compilation {
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     @ToString.Exclude
-    private List<Event> events;
+    private Set<Event> events;
 
     public Compilation(String title, Boolean pinned) {
         this.title = title;

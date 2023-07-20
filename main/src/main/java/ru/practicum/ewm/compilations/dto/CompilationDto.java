@@ -16,7 +16,7 @@ public class CompilationDto {
     private Boolean pinned;
     private String title;
 
-    public CompilationDto(Long id, Boolean pinned, String title) {
+    public CompilationDto(Long id, boolean pinned, String title) {
         this.id = id;
         this.pinned = pinned;
         this.title = title;

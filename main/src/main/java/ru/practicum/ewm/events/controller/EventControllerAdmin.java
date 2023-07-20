@@ -2,6 +2,7 @@ package ru.practicum.ewm.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.events.EventService;
 import ru.practicum.ewm.events.dto.EventFullDto;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/events")

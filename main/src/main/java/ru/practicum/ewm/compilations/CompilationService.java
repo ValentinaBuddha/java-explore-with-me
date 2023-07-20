@@ -13,6 +13,7 @@ import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.exceptions.NotFoundException;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,18 +34,19 @@ public class CompilationService {
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateCompilation) {
         Compilation compilation = getCompilation(compId);
         if (updateCompilation.getEvents() != null) {
-            List<Event> events = updateCompilation.getEvents().stream().map(id -> {
+            Set<Event> events = updateCompilation.getEvents().stream().map(id -> {
                 Event event = new Event();
                 event.setId(id);
                 return event;
-            }).collect(Collectors.toList());
+            }).collect(Collectors.toSet());
             compilation.setEvents(events);
         }
         if (updateCompilation.getPinned() != null) {
             compilation.setPinned(updateCompilation.getPinned());
         }
-        if (updateCompilation.getTitle() != null) {
-            compilation.setTitle(updateCompilation.getTitle());
+        String title = updateCompilation.getTitle();
+        if (title != null && !title.isBlank()) {
+            compilation.setTitle(title);
         }
         return CompilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }
