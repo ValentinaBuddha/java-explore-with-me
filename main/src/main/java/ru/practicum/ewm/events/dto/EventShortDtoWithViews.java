@@ -15,7 +15,7 @@ import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventShortDto {
+public class EventShortDtoWithViews {
     Long id;
 
     String annotation;
@@ -32,4 +32,6 @@ public class EventShortDto {
     Boolean paid;
 
     String title;
+
+    Long views;
 }

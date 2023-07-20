@@ -38,8 +38,7 @@ CREATE TABLE IF NOT EXISTS events(
     published_on       TIMESTAMP,
     request_moderation BOOLEAN,
     state              VARCHAR(10),
-    title              VARCHAR(120) NOT NULL,
-    views              BIGINT
+    title              VARCHAR(120) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS compilations(

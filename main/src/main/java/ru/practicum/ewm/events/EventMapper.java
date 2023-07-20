@@ -1,9 +1,7 @@
 package ru.practicum.ewm.events;
 
 import ru.practicum.ewm.categories.CategoryMapper;
-import ru.practicum.ewm.events.dto.EventFullDto;
-import ru.practicum.ewm.events.dto.EventShortDto;
-import ru.practicum.ewm.events.dto.NewEventDto;
+import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.locations.LocationMapper;
 import ru.practicum.ewm.users.UserMapper;
@@ -41,7 +39,27 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .build();
+    }
+
+    public EventFullDtoWithViews toEventFullDtoWithViews(Event event, Long views) {
+        return EventFullDtoWithViews.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequests())
+                .createdOn(event.getCreatedOn())
+                .description(event.getDescription())
+                .eventDate(event.getEventDate())
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .location(LocationMapper.toLocationDto(event.getLocation()))
+                .paid(event.getPaid())
+                .participantLimit(event.getParticipantLimit())
+                .publishedOn(event.getPublishedOn())
+                .requestModeration(event.getRequestModeration())
+                .state(event.getState())
+                .title(event.getTitle())
+                .views(views)
                 .build();
     }
 
@@ -55,7 +73,20 @@ public class EventMapper {
                 .initiator(UserMapper.toUserShortDto(event.getInitiator()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .build();
+    }
+
+    public EventShortDtoWithViews toEventShortDtoWithViews(Event event, Long views) {
+        return EventShortDtoWithViews.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequests())
+                .eventDate(event.getEventDate())
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .paid(event.getPaid())
+                .title(event.getTitle())
+                .views(views)
                 .build();
     }
 }
