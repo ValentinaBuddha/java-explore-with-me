@@ -45,7 +45,8 @@ public class RequestService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new ForbiddenException("Participation is possible only in published event.");
         }
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <=
+                requestRepository.countByEventIdAndStatus(eventId, CONFIRMED)) {
             throw new ForbiddenException("Participant limit has been reached.");
         }
         ParticipationRequest request = new ParticipationRequest();
@@ -57,8 +58,6 @@ public class RequestService {
             request.setStatus(PENDING);
         } else {
             request.setStatus(CONFIRMED);
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            eventRepository.save(event);
         }
         return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }
@@ -71,7 +70,8 @@ public class RequestService {
         if (!event.getInitiator().equals(initiator)) {
             throw new ValidationException("User isn't initiator.");
         }
-        if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <=
+                requestRepository.countByEventIdAndStatus(eventId, CONFIRMED)) {
             throw new ForbiddenException("The participant limit has been reached.");
         }
 
@@ -85,9 +85,9 @@ public class RequestService {
                         rejected.add(RequestMapper.toParticipationRequestDto(request));
                     }
                     if (statusUpdateRequest.getStatus().equals(CONFIRMED) && event.getParticipantLimit() > 0 &&
-                            event.getConfirmedRequests() < event.getParticipantLimit()) {
+                            requestRepository.countByEventIdAndStatus(eventId, CONFIRMED) <
+                                    event.getParticipantLimit()) {
                         request.setStatus(CONFIRMED);
-                        event.setConfirmedRequests(event.getConfirmedRequests() + 1);
                         confirmed.add(RequestMapper.toParticipationRequestDto(request));
                     } else {
                         request.setStatus(REJECTED);

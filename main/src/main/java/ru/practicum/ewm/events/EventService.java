@@ -27,6 +27,7 @@ import ru.practicum.ewm.exceptions.ValidationException;
 import ru.practicum.ewm.locations.Location;
 import ru.practicum.ewm.locations.LocationMapper;
 import ru.practicum.ewm.locations.LocationRepository;
+import ru.practicum.ewm.requests.RequestRepository;
 import ru.practicum.ewm.stats.client.StatsClient;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.ViewStats;
@@ -46,6 +47,7 @@ import static ru.practicum.ewm.events.model.StateActionAdmin.PUBLISH_EVENT;
 import static ru.practicum.ewm.events.model.StateActionAdmin.REJECT_EVENT;
 import static ru.practicum.ewm.events.model.StateActionPrivate.CANCEL_REVIEW;
 import static ru.practicum.ewm.events.model.StateActionPrivate.SEND_TO_REVIEW;
+import static ru.practicum.ewm.requests.model.RequestStatus.CONFIRMED;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +59,7 @@ public class EventService {
     final CategoryRepository categoryRepository;
     final CategoryService categoryService;
     final LocationRepository locationRepository;
+    final RequestRepository requestRepository;
     final StatsClient statsClient;
     @Value("${app}")
     String app;
@@ -75,8 +78,7 @@ public class EventService {
         event.setLocation(location);
         event.setCreatedOn(LocalDateTime.now());
         event.setState(PENDING);
-        event.setConfirmedRequests(0);
-        return EventMapper.toEventFullDto(eventRepository.save(event));
+        return EventMapper.toEventFullDto(eventRepository.save(event), 0);
     }
 
     public EventFullDto updateEventByOwner(Long userId, Long eventId, UpdateEventUserRequest updateEvent) {
@@ -125,7 +127,8 @@ public class EventService {
                 event.setState(State.CANCELED);
             }
         }
-        return EventMapper.toEventFullDto(eventRepository.save(event));
+        return EventMapper.toEventFullDto(eventRepository.save(event),
+                requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
     }
 
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateEvent) {
@@ -177,51 +180,23 @@ public class EventService {
         if (title != null && !title.isBlank()) {
             event.setTitle(title);
         }
-        return EventMapper.toEventFullDto(eventRepository.save(event));
+        return EventMapper.toEventFullDto(eventRepository.save(event),
+                requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
     }
 
     @Transactional(readOnly = true)
     public List<EventShortDto> getEventsByOwner(Long userId, Integer from, Integer size) {
         return eventRepository.findAllByInitiatorId(userId, PageRequest.of(from / size, size)).stream()
-                .map(EventMapper::toEventShortDto).collect(Collectors.toList());
+                .map(event -> EventMapper.toEventShortDto(event,
+                        requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public EventFullDto getEventByOwner(Long userId, Long eventId) {
-        return EventMapper.toEventFullDto(getEvent(eventId, userId));
+        return EventMapper.toEventFullDto(getEvent(eventId, userId),
+                requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
     }
-
-//    @Transactional(readOnly = true)
-//    public List<EventFullDto> DELETEgetEventsByAdminParams(List<Long> users, List<String> states, List<Long> categories,
-//                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd,
-//                                                     Integer from, Integer size) {
-//        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-//            throw new ValidationException("Incorrectly made request.");
-//        }
-//        Specification<Event> specification = Specification.where(null);
-//        if (users != null) {
-//            specification = specification.and((root, query, criteriaBuilder) ->
-//                    root.get("initiator").get("id").in(users));
-//        }
-//        if (states != null) {
-//            specification = specification.and((root, query, criteriaBuilder) ->
-//                    root.get("state").as(String.class).in(states));
-//        }
-//        if (categories != null) {
-//            specification = specification.and((root, query, criteriaBuilder) ->
-//                    root.get("category").get("id").in(categories));
-//        }
-//        if (rangeStart != null) {
-//            specification = specification.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.greaterThanOrEqualTo(root.get("eventDate"), rangeStart));
-//        }
-//        if (rangeEnd != null) {
-//            specification = specification.and((root, query, criteriaBuilder) ->
-//                    criteriaBuilder.lessThanOrEqualTo(root.get("eventDate"), rangeEnd));
-//        }
-//        return eventRepository.findAll(specification, PageRequest.of(from / size, size)).stream()
-//                .map(EventMapper::toEventFullDto).collect(Collectors.toList());
-//    }
 
     @Transactional(readOnly = true)
     public List<EventFullDtoWithViews> getEventsByAdminParams(List<Long> users, List<String> states, List<Long> categories,
@@ -266,9 +241,11 @@ public class EventService {
             List<ViewStats> statsDto = mapper.convertValue(response.getBody(), new TypeReference<>() {
             });
             if (!statsDto.isEmpty()) {
-                result.add(EventMapper.toEventFullDtoWithViews(event, statsDto.get(0).getHits()));
+                result.add(EventMapper.toEventFullDtoWithViews(event, statsDto.get(0).getHits(),
+                        requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)));
             } else {
-                result.add(EventMapper.toEventFullDtoWithViews(event, 0L));
+                result.add(EventMapper.toEventFullDtoWithViews(event, 0L,
+                        requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)));
             }
         }
         return result;
@@ -337,9 +314,11 @@ public class EventService {
             List<ViewStats> statsDto = mapper.convertValue(response.getBody(), new TypeReference<>() {
             });
             if (!statsDto.isEmpty()) {
-                result.add(EventMapper.toEventShortDtoWithViews(event, statsDto.get(0).getHits()));
+                result.add(EventMapper.toEventShortDtoWithViews(event, statsDto.get(0).getHits(),
+                        requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)));
             } else {
-                result.add(EventMapper.toEventShortDtoWithViews(event, 0L));
+                result.add(EventMapper.toEventShortDtoWithViews(event, 0L,
+                        requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)));
             }
         }
         EndpointHitDto hit = new EndpointHitDto(app, request.getRequestURI(), request.getRemoteAddr(),
@@ -361,9 +340,11 @@ public class EventService {
         });
         EventFullDtoWithViews result;
         if (!statsDto.isEmpty()) {
-            result = EventMapper.toEventFullDtoWithViews(event, statsDto.get(0).getHits());
+            result = EventMapper.toEventFullDtoWithViews(event, statsDto.get(0).getHits(),
+                    requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
         } else {
-            result = EventMapper.toEventFullDtoWithViews(event, 0L);
+            result = EventMapper.toEventFullDtoWithViews(event, 0L,
+                    requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
         }
         EndpointHitDto hit = new EndpointHitDto(app, request.getRequestURI(), request.getRemoteAddr(),
                 LocalDateTime.now());
