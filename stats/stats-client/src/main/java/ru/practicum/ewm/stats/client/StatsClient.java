@@ -20,7 +20,7 @@ public class StatsClient {
     @Value("${client.url}")
     private String serverUrl;
     private final RestTemplate rest;
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public StatsClient() {
         this.rest = new RestTemplate();
@@ -49,8 +49,8 @@ public class StatsClient {
             url.append("&uris=").append(uri);
         }
         url.append("&unique=").append(unique);
-        url.append("&start=").append(start.format(FORMATTER));
-        url.append("&end=").append(end.format(FORMATTER));
+        url.append("&start=").append(start.format(formatter));
+        url.append("&end=").append(end.format(formatter));
 
         ResponseEntity<Object> response;
         try {
