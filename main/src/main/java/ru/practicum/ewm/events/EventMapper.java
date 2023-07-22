@@ -22,7 +22,7 @@ public class EventMapper {
                 .build();
     }
 
-    public EventFullDto toEventFullDto(Event event, Integer confirmedRequests) {
+    public EventFullDto toEventFullDto(Event event, Long confirmedRequests) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -42,7 +42,7 @@ public class EventMapper {
                 .build();
     }
 
-    public EventFullDtoWithViews toEventFullDtoWithViews(Event event, Long views, Integer confirmedRequests) {
+    public EventFullDtoWithViews toEventFullDtoWithViews(Event event, Long views, Long confirmedRequests) {
         return EventFullDtoWithViews.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -63,7 +63,7 @@ public class EventMapper {
                 .build();
     }
 
-    public EventShortDto toEventShortDto(Event event, Integer confirmedRequests) {
+    public EventShortDto toEventShortDto(Event event, Long confirmedRequests) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -76,7 +76,7 @@ public class EventMapper {
                 .build();
     }
 
-    public EventShortDtoWithViews toEventShortDtoWithViews(Event event, Long views, Integer confirmedRequests) {
+    public EventShortDtoWithViews toEventShortDtoWithViews(Event event, Long views, Long confirmedRequests) {
         return EventShortDtoWithViews.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())

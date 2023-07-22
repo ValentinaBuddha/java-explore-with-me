@@ -22,7 +22,7 @@ public class EventShortDtoWithViews {
 
     CategoryDto category;
 
-    Integer confirmedRequests;
+    Long confirmedRequests;
 
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;

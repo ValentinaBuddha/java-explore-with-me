@@ -13,9 +13,11 @@ import ru.practicum.ewm.events.EventRepository;
 import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.exceptions.NotFoundException;
 import ru.practicum.ewm.requests.RequestRepository;
+import ru.practicum.ewm.requests.dto.ConfirmedRequests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,10 +37,13 @@ public class CompilationService {
             compilation.setEvents(eventRepository.findAllByIdIn(newCompilationDto.getEvents()));
         }
         CompilationDto compilationDto = CompilationMapper.toCompilationDto(compilationRepository.save(compilation));
+        List<Long> ids = compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList());
         if (compilation.getEvents() != null) {
+            Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
+                    .stream()
+                    .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
             compilationDto.setEvents(compilation.getEvents().stream()
-                    .map(event -> EventMapper.toEventShortDto(event,
-                            requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)))
+                    .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
                     .collect(Collectors.toList()));
         }
         return compilationDto;
@@ -62,10 +67,13 @@ public class CompilationService {
             compilation.setTitle(title);
         }
         CompilationDto compilationDto = CompilationMapper.toCompilationDto(compilationRepository.save(compilation));
+        List<Long> ids = compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList());
         if (compilation.getEvents() != null) {
+            Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
+                    .stream()
+                    .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
             compilationDto.setEvents(compilation.getEvents().stream()
-                    .map(event -> EventMapper.toEventShortDto(event,
-                            requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)))
+                    .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
                     .collect(Collectors.toList()));
         }
         return compilationDto;
@@ -79,10 +87,13 @@ public class CompilationService {
             List<CompilationDto> result = new ArrayList<>();
             for (Compilation compilation : compilations) {
                 CompilationDto compilationDto = CompilationMapper.toCompilationDto(compilation);
+                List<Long> ids = compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList());
                 if (compilation.getEvents() != null) {
+                    Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
+                            .stream()
+                            .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
                     compilationDto.setEvents(compilation.getEvents().stream()
-                            .map(event -> EventMapper.toEventShortDto(event,
-                                    requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)))
+                            .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
                             .collect(Collectors.toList()));
                 }
                 result.add(compilationDto);
@@ -93,10 +104,13 @@ public class CompilationService {
             List<CompilationDto> result = new ArrayList<>();
             for (Compilation compilation : compilations) {
                 CompilationDto compilationDto = CompilationMapper.toCompilationDto(compilation);
+                List<Long> ids = compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList());
                 if (compilation.getEvents() != null) {
+                    Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
+                            .stream()
+                            .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
                     compilationDto.setEvents(compilation.getEvents().stream()
-                            .map(event -> EventMapper.toEventShortDto(event,
-                                    requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)))
+                            .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
                             .collect(Collectors.toList()));
                 }
                 result.add(compilationDto);
@@ -109,10 +123,13 @@ public class CompilationService {
     public CompilationDto getCompilationById(Long compilationId) {
         Compilation compilation = getCompilation(compilationId);
         CompilationDto compilationDto = CompilationMapper.toCompilationDto(compilation);
+        List<Long> ids = compilation.getEvents().stream().map(Event::getId).collect(Collectors.toList());
         if (compilation.getEvents() != null) {
+            Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
+                    .stream()
+                    .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
             compilationDto.setEvents(compilation.getEvents().stream()
-                    .map(event -> EventMapper.toEventShortDto(event,
-                            requestRepository.countByEventIdAndStatus(event.getId(), CONFIRMED)))
+                    .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
                     .collect(Collectors.toList()));
         }
         return compilationDto;

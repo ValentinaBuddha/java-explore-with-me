@@ -36,6 +36,7 @@ public class NewEventDto {
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     LocalDateTime eventDate;
 
+    @NotNull
     @Valid
     LocationDto location;
 
