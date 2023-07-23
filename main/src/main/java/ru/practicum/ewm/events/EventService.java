@@ -192,9 +192,9 @@ public class EventService {
         List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
         Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
                 .stream()
-                .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
+                .collect(Collectors.toMap(ConfirmedRequests::getEvent, ConfirmedRequests::getCount));
         return events.stream()
-                .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
+                .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.getOrDefault(event.getId(), 0L)))
                 .collect(Collectors.toList());
     }
 
@@ -243,18 +243,18 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("Start was not found"));
         ResponseEntity<Object> response = statsClient.getStats(start, LocalDateTime.now(), uris, true);
         List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
-        Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
-                .stream()
-                .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
+        Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED).stream()
+                .collect(Collectors.toMap(ConfirmedRequests::getEvent, ConfirmedRequests::getCount));
         for (Event event : events) {
             ObjectMapper mapper = new ObjectMapper();
             List<ViewStats> statsDto = mapper.convertValue(response.getBody(), new TypeReference<>() {
             });
             if (!statsDto.isEmpty()) {
                 result.add(EventMapper.toEventFullDtoWithViews(event, statsDto.get(0).getHits(),
-                        confirmedRequests.get(event.getId())));
+                        confirmedRequests.getOrDefault(event.getId(), 0L)));
             } else {
-                result.add(EventMapper.toEventFullDtoWithViews(event, 0L, confirmedRequests.get(event.getId())));
+                result.add(EventMapper.toEventFullDtoWithViews(event, 0L,
+                        confirmedRequests.getOrDefault(event.getId(), 0L)));
             }
         }
         return result;
@@ -321,16 +321,17 @@ public class EventService {
         List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
         Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
                 .stream()
-                .collect(Collectors.toMap(conReq -> conReq.getEvent().getId(), ConfirmedRequests::getCount));
+                .collect(Collectors.toMap(ConfirmedRequests::getEvent, ConfirmedRequests::getCount));
         for (Event event : events) {
             ObjectMapper mapper = new ObjectMapper();
             List<ViewStats> statsDto = mapper.convertValue(response.getBody(), new TypeReference<>() {
             });
             if (!statsDto.isEmpty()) {
                 result.add(EventMapper.toEventShortDtoWithViews(event, statsDto.get(0).getHits(),
-                        confirmedRequests.get(event.getId())));
+                        confirmedRequests.getOrDefault(event.getId(), 0L)));
             } else {
-                result.add(EventMapper.toEventShortDtoWithViews(event, 0L, confirmedRequests.get(event.getId())));
+                result.add(EventMapper.toEventShortDtoWithViews(event, 0L,
+                        confirmedRequests.getOrDefault(event.getId(), 0L)));
             }
         }
         EndpointHitDto hit = new EndpointHitDto(app, request.getRequestURI(), request.getRemoteAddr(),

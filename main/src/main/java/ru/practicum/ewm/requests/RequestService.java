@@ -74,10 +74,8 @@ public class RequestService {
                 requestRepository.countByEventIdAndStatus(eventId, CONFIRMED)) {
             throw new ForbiddenException("The participant limit has been reached.");
         }
-
         List<ParticipationRequestDto> confirmed = new ArrayList<>();
         List<ParticipationRequestDto> rejected = new ArrayList<>();
-        Long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, CONFIRMED);
         List<ParticipationRequest> requests = requestRepository.findAllByEventIdAndIdInAndStatus(eventId,
                         statusUpdateRequest.getRequestIds(), PENDING).stream().peek(request -> {
                     if (statusUpdateRequest.getStatus() == REJECTED) {
@@ -85,7 +83,7 @@ public class RequestService {
                         rejected.add(RequestMapper.toParticipationRequestDto(request));
                     }
                     if (statusUpdateRequest.getStatus().equals(CONFIRMED) && event.getParticipantLimit() > 0 &&
-                            confirmedRequests < event.getParticipantLimit()) {
+                            requestRepository.countByEventIdAndStatus(eventId, CONFIRMED) < event.getParticipantLimit()) {
                         request.setStatus(CONFIRMED);
                         confirmed.add(RequestMapper.toParticipationRequestDto(request));
                     } else {

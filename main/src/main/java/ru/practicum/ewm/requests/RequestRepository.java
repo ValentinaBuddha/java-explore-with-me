@@ -20,9 +20,9 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     Boolean existsByRequesterIdAndEventId(Long userId, Long eventId);
 
-    Long countByEventIdAndStatus(Long eventId, RequestStatus status);
+    long countByEventIdAndStatus(Long eventId, RequestStatus status);
 
-    @Query("SELECT new ru.practicum.ewm.requests.dto.ConfirmedRequests(COUNT(DISTINCT r.id), r.event) " +
+    @Query("SELECT new ru.practicum.ewm.requests.dto.ConfirmedRequests(COUNT(DISTINCT r.id), r.event.id) " +
             "FROM ParticipationRequest AS r " +
             "WHERE r.event.id IN (:ids) AND r.status = :status " +
             "GROUP BY (r.event)")
