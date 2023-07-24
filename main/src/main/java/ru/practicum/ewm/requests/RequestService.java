@@ -70,30 +70,29 @@ public class RequestService {
         if (!event.getInitiator().equals(initiator)) {
             throw new ValidationException("User isn't initiator.");
         }
-        if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <=
-                requestRepository.countByEventIdAndStatus(eventId, CONFIRMED)) {
+        long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, CONFIRMED);
+        if (event.getParticipantLimit() > 0 && event.getParticipantLimit() <= confirmedRequests) {
             throw new ForbiddenException("The participant limit has been reached.");
         }
         List<ParticipationRequestDto> confirmed = new ArrayList<>();
         List<ParticipationRequestDto> rejected = new ArrayList<>();
         List<ParticipationRequest> requests = requestRepository.findAllByEventIdAndIdInAndStatus(eventId,
-                        statusUpdateRequest.getRequestIds(), PENDING).stream().peek(request -> {
-                    if (statusUpdateRequest.getStatus() == REJECTED) {
-                        request.setStatus(statusUpdateRequest.getStatus());
-                        rejected.add(RequestMapper.toParticipationRequestDto(request));
-                    }
-                    if (statusUpdateRequest.getStatus().equals(CONFIRMED) && event.getParticipantLimit() > 0 &&
-                            requestRepository.countByEventIdAndStatus(eventId, CONFIRMED) < event.getParticipantLimit()) {
-                        request.setStatus(CONFIRMED);
-                        confirmed.add(RequestMapper.toParticipationRequestDto(request));
-                    } else {
-                        request.setStatus(REJECTED);
-                        rejected.add(RequestMapper.toParticipationRequestDto(request));
-                    }
-                })
-                .collect(Collectors.toList());
-        eventRepository.save(event);
-        requestRepository.saveAll(requests);
+                statusUpdateRequest.getRequestIds(), PENDING);
+        for (int i = 0; i < requests.size(); i++) {
+            ParticipationRequest request = requests.get(i);
+            if (statusUpdateRequest.getStatus() == REJECTED) {
+                request.setStatus(REJECTED);
+                rejected.add(RequestMapper.toParticipationRequestDto(request));
+            }
+            if (statusUpdateRequest.getStatus() == CONFIRMED && event.getParticipantLimit() > 0 &&
+                    (confirmedRequests + i) < event.getParticipantLimit()) {
+                request.setStatus(CONFIRMED);
+                confirmed.add(RequestMapper.toParticipationRequestDto(request));
+            } else {
+                request.setStatus(REJECTED);
+                rejected.add(RequestMapper.toParticipationRequestDto(request));
+            }
+        }
         return new EventRequestStatusUpdateResult(confirmed, rejected);
     }
 
