@@ -231,13 +231,15 @@ public class EventService {
         }
         List<Event> events = eventRepository.findAll(specification, PageRequest.of(from / size, size)).getContent();
         List<EventFullDtoWithViews> result = new ArrayList<>();
-        List<String> uris = events.stream()
-                .map(event -> String.format("/events/%s", event.getId()))
-                .collect(Collectors.toList());
-        Optional<LocalDateTime> start = events.stream()
-                .map(Event::getCreatedOn)
-                .min(LocalDateTime::compareTo);
-        if (start.isPresent()) {
+        if (events.isEmpty()) {
+            return result;
+        } else {
+            List<String> uris = events.stream()
+                    .map(event -> String.format("/events/%s", event.getId()))
+                    .collect(Collectors.toList());
+            Optional<LocalDateTime> start = events.stream()
+                    .map(Event::getCreatedOn)
+                    .min(LocalDateTime::compareTo);
             ResponseEntity<Object> response = statsClient.getStats(start.get(), LocalDateTime.now(), uris, true);
             List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
             Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED).stream()
@@ -255,8 +257,6 @@ public class EventService {
                 }
             }
             return result;
-        } else {
-            return Collections.emptyList();
         }
     }
 
@@ -310,13 +310,15 @@ public class EventService {
         }
         List<Event> events = eventRepository.findAll(specification, pageRequest).getContent();
         List<EventShortDtoWithViews> result = new ArrayList<>();
-        List<String> uris = events.stream()
-                .map(event -> String.format("/events/%s", event.getId()))
-                .collect(Collectors.toList());
-        Optional<LocalDateTime> start = events.stream()
-                .map(Event::getCreatedOn)
-                .min(LocalDateTime::compareTo);
-        if (start.isPresent()) {
+        if (events.isEmpty()) {
+            return result;
+        } else {
+            List<String> uris = events.stream()
+                    .map(event -> String.format("/events/%s", event.getId()))
+                    .collect(Collectors.toList());
+            Optional<LocalDateTime> start = events.stream()
+                    .map(Event::getCreatedOn)
+                    .min(LocalDateTime::compareTo);
             ResponseEntity<Object> response = statsClient.getStats(start.get(), LocalDateTime.now(), uris, true);
             List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
             Map<Long, Long> confirmedRequests = requestRepository.findAllByEventIdInAndStatus(ids, CONFIRMED)
@@ -338,8 +340,6 @@ public class EventService {
                     LocalDateTime.now());
             statsClient.saveHit(hit);
             return result;
-        } else {
-            return Collections.emptyList();
         }
     }
 
