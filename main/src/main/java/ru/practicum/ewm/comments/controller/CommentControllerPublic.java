@@ -17,10 +17,11 @@ import java.util.List;
 public class CommentControllerPublic {
     private final CommentService commentService;
 
-    @GetMapping
-    List<CommentDto> getComments(@RequestParam(value = "from", defaultValue = "0") @PositiveOrZero Integer from,
+    @GetMapping("/event/{eventId}")
+    List<CommentDto> getComments(@PathVariable Long eventId,
+                                 @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero Integer from,
                                  @RequestParam(value = "size", defaultValue = "10") @Positive Integer size) {
-        return commentService.getComments(from, size);
+        return commentService.getComments(eventId, from, size);
     }
 
     @GetMapping("/{commentId}")

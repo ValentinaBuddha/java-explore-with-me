@@ -17,10 +17,10 @@ import static ru.practicum.ewm.util.DateConstant.DATE_TIME_PATTERN;
 public class CommentDto {
     private Long id;
     private String text;
-    private EventShortDto event;
     private UserShortDto author;
+    private EventShortDto event;
     @JsonFormat(pattern = DATE_TIME_PATTERN)
     private LocalDateTime created;
     @JsonFormat(pattern = DATE_TIME_PATTERN)
-    private LocalDateTime edit;
+    private LocalDateTime edited;
 }

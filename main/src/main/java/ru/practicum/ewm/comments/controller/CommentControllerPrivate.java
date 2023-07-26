@@ -20,17 +20,20 @@ import java.util.List;
 public class CommentControllerPrivate {
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public CommentDto addComment(@PathVariable Long userId, @RequestBody @Valid NewCommentDto newCommentDto) {
-        return commentService.addComment(userId, newCommentDto);
+    public CommentDto addComment(@PathVariable Long userId,
+                                 @PathVariable Long eventId,
+                                 @RequestBody @Valid NewCommentDto newCommentDto) {
+        return commentService.addComment(userId, eventId, newCommentDto);
     }
 
-    @PatchMapping("/{commentId}")
+    @PatchMapping("/{eventId}/{commentId}")
     public CommentDto updateComment(@PathVariable Long userId,
+                                    @PathVariable Long eventId,
                                     @PathVariable Long commentId,
                                     @RequestBody @Valid NewCommentDto newCommentDto) {
-        return commentService.updateComment(userId, commentId, newCommentDto);
+        return commentService.updateComment(userId, eventId, commentId, newCommentDto);
     }
 
     @GetMapping
@@ -42,7 +45,8 @@ public class CommentControllerPrivate {
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public void deleteComment(@PathVariable Long userId,
+                              @PathVariable Long commentId) {
+        commentService.deleteComment(userId, commentId);
     }
 }

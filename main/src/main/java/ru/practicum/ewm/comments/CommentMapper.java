@@ -12,23 +12,23 @@ import java.time.LocalDateTime;
 
 @UtilityClass
 public class CommentMapper {
-    public Comment toComment(NewCommentDto newCommentDto, Event event, User author) {
+    public Comment toComment(NewCommentDto newCommentDto, User author, Event event) {
         Comment comment = new Comment();
-        comment.setEvent(event);
         comment.setAuthor(author);
+        comment.setEvent(event);
         comment.setText(newCommentDto.getText());
         comment.setCreated(LocalDateTime.now());
         return comment;
     }
 
-    public CommentDto toCommentDto(Comment comment, EventShortDto event, UserShortDto author) {
+    public CommentDto toCommentDto(Comment comment, UserShortDto author, EventShortDto event) {
         return new CommentDto(
                 comment.getId(),
                 comment.getText(),
-                event,
                 author,
+                event,
                 comment.getCreated(),
-                comment.getEdit()
+                comment.getEdited()
         );
     }
 }

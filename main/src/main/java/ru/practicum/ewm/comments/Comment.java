@@ -25,15 +25,15 @@ public class Comment {
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User author;
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @Column(nullable = false)
     private LocalDateTime created;
 
-    private LocalDateTime edit;
+    private LocalDateTime edited;
 }
