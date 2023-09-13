@@ -1,4 +1,4 @@
-package ru.practicum.ewm.events;
+package ru.practicum.ewm.events.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.categories.Category;
 import ru.practicum.ewm.categories.CategoryMapper;
 import ru.practicum.ewm.categories.CategoryRepository;
-import ru.practicum.ewm.categories.CategoryService;
+import ru.practicum.ewm.categories.service.CategoryService;
+import ru.practicum.ewm.events.EventMapper;
+import ru.practicum.ewm.events.EventRepository;
 import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.events.model.State;
@@ -52,7 +54,7 @@ import static ru.practicum.ewm.requests.model.RequestStatus.CONFIRMED;
 @RequiredArgsConstructor
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventService {
+public class EventServiceImpl implements EventService {
     final EventRepository eventRepository;
     final UserRepository userRepository;
     final CategoryRepository categoryRepository;
@@ -63,6 +65,7 @@ public class EventService {
     @Value("${app}")
     String app;
 
+    @Override
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
         checkActualTime(newEventDto.getEventDate());
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -80,6 +83,7 @@ public class EventService {
         return EventMapper.toEventFullDto(eventRepository.save(event), 0L);
     }
 
+    @Override
     public EventFullDto updateEventByOwner(Long userId, Long eventId, UpdateEventUserRequest updateEvent) {
         Event event = getEvent(eventId, userId);
         if (event.getState() == PUBLISHED) {
@@ -130,6 +134,7 @@ public class EventService {
                 requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
     }
 
+    @Override
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateEvent) {
         Event event = getEvent(eventId);
         if (updateEvent.getStateAction() != null) {
@@ -184,6 +189,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<EventShortDto> getEventsByOwner(Long userId, Integer from, Integer size) {
         List<Event> events = eventRepository.findAllByInitiatorId(userId, PageRequest.of(from / size, size));
         List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
@@ -196,12 +202,14 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public EventFullDto getEventByOwner(Long userId, Long eventId) {
         return EventMapper.toEventFullDto(getEvent(eventId, userId),
                 requestRepository.countByEventIdAndStatus(eventId, CONFIRMED));
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<EventFullDtoWithViews> getEventsByAdminParams(List<Long> users, List<String> states, List<Long> categories,
                                                               LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                               Integer from, Integer size) {
@@ -261,6 +269,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<EventShortDtoWithViews> getEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                   LocalDateTime rangeEnd, Boolean onlyAvailable, String sort, Integer from,
                                                   Integer size, HttpServletRequest request) {
@@ -344,6 +353,7 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public EventFullDtoWithViews getEventById(Long eventId, HttpServletRequest request) {
         Event event = getEvent(eventId);
         if (event.getState() != PUBLISHED) {

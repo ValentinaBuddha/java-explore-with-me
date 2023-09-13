@@ -3,8 +3,8 @@ package ru.practicum.ewm.comments.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.comments.CommentService;
 import ru.practicum.ewm.comments.dto.CommentDto;
+import ru.practicum.ewm.comments.service.CommentService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;

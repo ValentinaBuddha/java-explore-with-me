@@ -1,11 +1,11 @@
 package ru.practicum.ewm.categories.controller;
 
-import ru.practicum.ewm.categories.dto.CategoryDto;
-import ru.practicum.ewm.categories.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.categories.dto.CategoryDto;
 import ru.practicum.ewm.categories.dto.NewCategoryDto;
+import ru.practicum.ewm.categories.service.CategoryService;
 
 import javax.validation.Valid;
 

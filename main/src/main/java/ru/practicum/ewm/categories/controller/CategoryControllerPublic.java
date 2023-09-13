@@ -1,10 +1,10 @@
 package ru.practicum.ewm.categories.controller;
 
-import org.springframework.validation.annotation.Validated;
-import ru.practicum.ewm.categories.dto.CategoryDto;
-import ru.practicum.ewm.categories.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.categories.dto.CategoryDto;
+import ru.practicum.ewm.categories.service.CategoryService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;

@@ -3,8 +3,8 @@ package ru.practicum.ewm.compilations.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.compilations.CompilationService;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
+import ru.practicum.ewm.compilations.service.CompilationService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
