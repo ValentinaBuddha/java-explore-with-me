@@ -1,10 +1,13 @@
-package ru.practicum.ewm.compilations;
+package ru.practicum.ewm.compilations.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.compilations.Compilation;
+import ru.practicum.ewm.compilations.CompilationMapper;
+import ru.practicum.ewm.compilations.CompilationRepository;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
 import ru.practicum.ewm.compilations.dto.NewCompilationDto;
 import ru.practicum.ewm.compilations.dto.UpdateCompilationRequest;
@@ -26,11 +29,12 @@ import static ru.practicum.ewm.requests.model.RequestStatus.CONFIRMED;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CompilationService {
+public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
 
+    @Override
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = CompilationMapper.toCompilation(newCompilationDto);
         if (newCompilationDto.getEvents() != null) {
@@ -49,6 +53,7 @@ public class CompilationService {
         return compilationDto;
     }
 
+    @Override
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateCompilation) {
         Compilation compilation = getCompilation(compId);
         if (updateCompilation.getEvents() != null) {
@@ -80,6 +85,7 @@ public class CompilationService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
         if (pinned != null) {
@@ -120,6 +126,7 @@ public class CompilationService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public CompilationDto getCompilationById(Long compilationId) {
         Compilation compilation = getCompilation(compilationId);
         CompilationDto compilationDto = CompilationMapper.toCompilationDto(compilation);
@@ -135,6 +142,7 @@ public class CompilationService {
         return compilationDto;
     }
 
+    @Override
     public void deleteCompilation(Long compilationId) {
         getCompilation(compilationId);
         compilationRepository.deleteById(compilationId);

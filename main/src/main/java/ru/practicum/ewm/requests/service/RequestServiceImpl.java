@@ -1,4 +1,4 @@
-package ru.practicum.ewm.requests;
+package ru.practicum.ewm.requests.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,6 +9,8 @@ import ru.practicum.ewm.events.model.State;
 import ru.practicum.ewm.exceptions.ForbiddenException;
 import ru.practicum.ewm.exceptions.NotFoundException;
 import ru.practicum.ewm.exceptions.ValidationException;
+import ru.practicum.ewm.requests.RequestMapper;
+import ru.practicum.ewm.requests.RequestRepository;
 import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
@@ -27,11 +29,12 @@ import static ru.practicum.ewm.requests.model.RequestStatus.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RequestService {
+public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
 
+    @Override
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
@@ -62,6 +65,7 @@ public class RequestService {
         return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }
 
+    @Override
     public EventRequestStatusUpdateResult updateRequestsStatus(Long userId, Long eventId,
                                                                EventRequestStatusUpdateRequest statusUpdateRequest) {
         User initiator = getUser(userId);
@@ -96,6 +100,7 @@ public class RequestService {
         return new EventRequestStatusUpdateResult(confirmed, rejected);
     }
 
+    @Override
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         ParticipationRequest request = requestRepository.findByIdAndRequesterId(requestId, userId);
         request.setStatus(RequestStatus.CANCELED);
@@ -103,6 +108,7 @@ public class RequestService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<ParticipationRequestDto> getRequestsByEventOwner(Long userId, Long eventId) {
         checkUser(userId);
         eventRepository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() ->
@@ -112,6 +118,7 @@ public class RequestService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<ParticipationRequestDto> getRequestsByUser(Long userId) {
         checkUser(userId);
         return requestRepository.findAllByRequesterId(userId).stream()

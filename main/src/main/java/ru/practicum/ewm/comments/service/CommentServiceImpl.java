@@ -1,9 +1,12 @@
-package ru.practicum.ewm.comments;
+package ru.practicum.ewm.comments.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.comments.Comment;
+import ru.practicum.ewm.comments.CommentMapper;
+import ru.practicum.ewm.comments.CommentRepository;
 import ru.practicum.ewm.comments.dto.CommentDto;
 import ru.practicum.ewm.comments.dto.NewCommentDto;
 import ru.practicum.ewm.events.EventMapper;
@@ -31,12 +34,13 @@ import static ru.practicum.ewm.requests.model.RequestStatus.CONFIRMED;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CommentService {
+public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
 
+    @Override
     public CommentDto addComment(Long userId, Long eventId, NewCommentDto newCommentDto) {
         User author = checkAndGetUser(userId);
         Event event = checkAndGetEvent(eventId);
@@ -50,6 +54,7 @@ public class CommentService {
         return CommentMapper.toCommentDto(comment, userShort, eventShort);
     }
 
+    @Override
     public CommentDto updateComment(Long userId, Long eventId, Long commentId, NewCommentDto newCommentDto) {
         User author = checkAndGetUser(userId);
         Event event = checkAndGetEvent(eventId);
@@ -67,6 +72,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<CommentDto> getCommentsByAuthor(Long userId, Integer from, Integer size) {
         User author = checkAndGetUser(userId);
         List<Comment> comments = commentRepository.findAllByAuthorId(userId, PageRequest.of(from / size, size));
@@ -85,6 +91,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<CommentDto> getComments(Long eventId, Integer from, Integer size) {
         Event event = checkAndGetEvent(eventId);
         EventShortDto eventShort = EventMapper.toEventShortDto(event,
@@ -96,6 +103,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public CommentDto getCommentById(Long commentId) {
         Comment comment = checkAndGetComment(commentId);
         UserShortDto userShort = UserMapper.toUserShortDto(comment.getAuthor());
@@ -104,6 +112,7 @@ public class CommentService {
         return CommentMapper.toCommentDto(comment, userShort, eventShort);
     }
 
+    @Override
     public void deleteComment(Long userId, Long commentId) {
         User author = checkAndGetUser(userId);
         Comment comment = checkAndGetComment(commentId);
@@ -113,6 +122,7 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
+    @Override
     public void deleteComment(Long commentId) {
         checkAndGetComment(commentId);
         commentRepository.deleteById(commentId);
