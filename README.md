@@ -42,12 +42,12 @@ _В рамках дипломного проекта реализовано пр
 * API для работы с подборками комментариями
 
 ## Спецификация Swagger для API:
-[Основной сервис](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/ewm-main-service-spec.json)
+[Основной сервис](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/ewm-main-service-spec.json)  
 [Сервис статистики](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/ewm-stats-service-spec.json)
 
 ## Postman тесты для сервисов:
-[Основной сервис](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/postman/main.json)
-[Сервис статистики](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/postman/stat.json)
+[Основной сервис](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/postman/main.json)  
+[Сервис статистики](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/postman/stat.json)  
 [Функциональность комментирования](https://github.com/ValentinaBuddha/java-explore-with-me/blob/main/postman/feature.json)
 
 ## Модель базы данных основного сервиса
